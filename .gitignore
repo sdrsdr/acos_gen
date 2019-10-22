@@ -1,0 +1,4 @@
+.vscode
+*.o
+*.bin
+acos_table_test

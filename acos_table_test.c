@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <stdio.h>
+#include "acos_table.h"
 
 #define FLOAT float //for declarations
 #define FFLOAT double //for printf and friends
@@ -12,13 +13,9 @@ const FLOAT grad2rad_f = PI/180;
 static inline FLOAT grad2rad (uint16_t a) { return  a*grad2rad_f; } ;
 static inline FLOAT rad2grad (FLOAT a) { return  a/grad2rad_f; } ;
 
-static inline uint16_t f2intrep (FLOAT f) { return  f*50000; } //fit enoug of FLOAT into uint16
 static inline FLOAT intrep2f (uint16_t i) { return  ((FLOAT)i)/((FLOAT)50000.0); } //turn back uint16 to FLOAT 
 
 void gen(void);
-
-//cos must be in range 0 to 1.0  inclusive
-extern uint16_t acos_table(uint16_t cos_v);
 
 const FLOAT step = 1.0/50000.0;
 int main(void) {
@@ -26,7 +23,7 @@ int main(void) {
 	uint16_t preva=-1;
 	FLOAT cos_v=1;
 	while (cos_v>=0) {
-		uint16_t cos_vi=f2intrep(cos_v);
+		uint16_t cos_vi=cos_v2cos_vi(cos_v);
 		uint16_t a=acos_table(cos_vi);
 		if (a!=preva || cos_v==0) {
 			FFLOAT a_chk=(FFLOAT)rad2grad(acos(cos_v));

@@ -10,7 +10,7 @@ TARGET ?= acos_table_test
 
 build: $(TARGET)
 
-acos_table_test: acos_table_test.c acos_table_loop.c
+acos_table_test: acos_table_test.c acos_table.c
 	$(GCC) $(CFLAGS)  -o $@ $^ $(LIBS)
 
 run: $(TARGET)

@@ -1,40 +1,7 @@
-#include <stdint.h>
-extern uint16_t acos_lookup[89];
-
-//cos must be in range 0 to 1.0  inclusive
-static inline uint16_t cos2cos_v(float cos_v) {
-	return cos_v*50000;
-}
-
-uint16_t acos_table(uint16_t cos_vi) {
-	uint16_t a; uint16_t *acos_lookup_at;
+#include "acos_table.h"
 
 
-	if (cos_vi<acos_lookup[44]){
-		if (cos_vi<acos_lookup[66]) {
-			a=66; acos_lookup_at=acos_lookup+66;
-		} else {
-			a=44; acos_lookup_at=acos_lookup+44;
-		}
-	} else {
-		if (cos_vi<acos_lookup[21]) {
-			a=21; acos_lookup_at=acos_lookup+21;
-		} else {
-			a=0; acos_lookup_at=acos_lookup;
-		}
-	}
-
-	while (a<=89) {
-		if (cos_vi>*acos_lookup_at) return a;
-		a++;acos_lookup_at++;
-	}
-
-	return 90;
-}
-
-
-
-uint16_t acos_lookup[89]={
+static uint16_t acos_lookup[89]={
 49992, // a=1(1.02488) cos=0.99984
 49969, // a=2(2.01771) cos=0.99938
 49931, // a=3(3.01045) cos=0.99862
@@ -125,3 +92,45 @@ uint16_t acos_lookup[89]={
 1744, // a=88(88.00112) cos=0.03488
 872, // a=89(89.00071) cos=0.01744
 };
+
+
+//clipping, full range -1 to +1 
+uint16_t acos_i(float  cos_v) {
+	//clip
+	if (cos_v>1) cos_v=1;
+	else if (cos_v<-1) cos_v=-1;
+
+	//work in cos_v>=0  ranges:
+	if (cos_v<0) return 180-acos_table(cos_v2cos_vi(-cos_v));
+	return acos_table(cos_v2cos_vi(cos_v));
+
+}
+
+
+//cos_v must be in range 0 to 1.0  inclusive
+uint16_t acos_table(uint16_t cos_vi) {
+	uint16_t a; uint16_t *acos_lookup_at;
+
+
+	if (cos_vi<acos_lookup[44]){
+		if (cos_vi<acos_lookup[66]) {
+			a=66; acos_lookup_at=acos_lookup+66;
+		} else {
+			a=44; acos_lookup_at=acos_lookup+44;
+		}
+	} else {
+		if (cos_vi<acos_lookup[21]) {
+			a=21; acos_lookup_at=acos_lookup+21;
+		} else {
+			a=0; acos_lookup_at=acos_lookup;
+		}
+	}
+
+	while (a<=89) {
+		if (cos_vi>*acos_lookup_at) return a;
+		a++;acos_lookup_at++;
+	}
+
+	return 90;
+}
+
